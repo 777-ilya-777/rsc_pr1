@@ -1,4 +1,4 @@
-from models import Session, Prompt, Feedback
+from .models import Session, Prompt, Feedback
 import database
 
 

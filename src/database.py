@@ -1,9 +1,14 @@
 
 """Хранение и обработка данных приложения в оперативной памяти."""
 
+import time
+
+
 sessions = []
 prompts = []
 feedbacks = []
+
+RECENT_INTERVAL_SECONDS = 9 * 60
 
 
 def create_session(session):
@@ -28,10 +33,11 @@ def delete_session(uid):
 
 def update_session(uid, locale):
     """Изменяет локаль существующей сессии."""
-    for session in sessions:
+    for index, session in enumerate(sessions):
         if session.uid == uid:
-            session.locale = locale
-            return session
+            updated = session._replace(locale=locale)
+            sessions[index] = updated
+            return updated
 
     return None
 
@@ -58,10 +64,11 @@ def delete_prompt(uid):
 
 def update_prompt(uid, parameter):
     """Изменяет параметр существующего запроса."""
-    for prompt in prompts:
+    for index, prompt in enumerate(prompts):
         if prompt.uid == uid:
-            prompt.parameter = parameter
-            return prompt
+            updated = prompt._replace(parameter=parameter)
+            prompts[index] = updated
+            return updated
 
     return None
 
@@ -88,27 +95,47 @@ def delete_feedback(uid):
 
 def update_feedback(uid, status):
     """Изменяет статус существующей записи."""
-    for feedback in feedbacks:
+    for index, feedback in enumerate(feedbacks):
         if feedback.uid == uid:
-            feedback.status = status
-            return feedback
+            updated = feedback._replace(status=status)
+            feedbacks[index] = updated
+            return updated
 
     return None
 
 
+def get_feedbacks_for_prompt(prompt):
+    """Возвращает записи Feedback для указанного Prompt."""
+    return [
+        feedback
+        for feedback in feedbacks
+        if feedback.prompt == prompt.uid
+    ]
+
+
 def get_recent_feedbacks():
-    """Соединяет записи Session, Prompt и Feedback."""
+    """Возвращает результаты запросов за последние 9 минут."""
+    time_limit = time.time() - RECENT_INTERVAL_SECONDS
+
+    session_by_uid = {
+        session.uid: session
+        for session in sessions
+    }
+
     result = []
 
-    for session in sessions:
-        for prompt in prompts:
-            if prompt.session == session.uid:
-                for feedback in feedbacks:
-                    if feedback.prompt == prompt.uid:
-                        result.append((
-                            feedback.error,
-                            prompt.parameter,
-                            session.locale
-                        ))
+    for prompt in prompts:
+        if prompt.datetime < time_limit:
+            continue
+
+        session = session_by_uid.get(prompt.session)
+        locale = session.locale if session else None
+
+        for feedback in get_feedbacks_for_prompt(prompt):
+            result.append((
+                feedback.error,
+                prompt.parameter,
+                locale
+            ))
 
     return result

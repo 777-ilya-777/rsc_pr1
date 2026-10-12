@@ -1,29 +1,28 @@
 
-from dataclasses import dataclass
+"""Модели записей приложения."""
+
+from typing import NamedTuple
 
 
-class Session:
-    """Модель пользовательской сессии."""
+class Session(NamedTuple):
+    """Данные пользовательской сессии."""
 
-    def __init__(self, uid, datetime, locale):
-        self.uid = uid
-        self.datetime = datetime
-        self.locale = locale
-
-
-class Prompt:
-    """Модель пользовательского запроса."""
-
-    def __init__(self, uid, datetime, parameter, session):
-        self.uid = uid
-        self.datetime = datetime
-        self.parameter = parameter
-        self.session = session
+    uid: int
+    datetime: int
+    locale: str
 
 
-@dataclass
-class Feedback:
-    """Модель результата обработки запроса."""
+class Prompt(NamedTuple):
+    """Данные пользовательского запроса."""
+
+    uid: int
+    datetime: int
+    parameter: str
+    session: int
+
+
+class Feedback(NamedTuple):
+    """Данные результата обработки запроса."""
 
     uid: int
     datetime: int

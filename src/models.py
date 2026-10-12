@@ -1,46 +1,35 @@
+
+from dataclasses import dataclass
+
+
 class Session:
-    def __init__(
-        self,
-        uid,
-        datetime,
-        locale
-    ):
+    """Модель пользовательской сессии."""
+
+    def __init__(self, uid, datetime, locale):
         self.uid = uid
         self.datetime = datetime
         self.locale = locale
 
 
 class Prompt:
-    def __init__(
-        self,
-        uid,
-        datetime,
-        parameter,
-        session
-    ):
+    """Модель пользовательского запроса."""
+
+    def __init__(self, uid, datetime, parameter, session):
         self.uid = uid
         self.datetime = datetime
         self.parameter = parameter
         self.session = session
 
 
+@dataclass
 class Feedback:
-    def __init__(
-        self,
-        uid,
-        datetime,
-        response,
-        status,
-        error,
-        prompt,
-        cache_hit,
-        duration
-    ):
-        self.uid = uid
-        self.datetime = datetime
-        self.response = response
-        self.status = status
-        self.error = error
-        self.prompt = prompt
-        self.cache_hit = cache_hit
-        self.duration = duration
+    """Модель результата обработки запроса."""
+
+    uid: int
+    datetime: int
+    response: str
+    status: str
+    error: str
+    prompt: int
+    cache_hit: int
+    duration: int

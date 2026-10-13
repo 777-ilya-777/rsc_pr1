@@ -30,8 +30,9 @@ def get_free_port():
 def start_server(port):
     """Запускает отдельный процесс RPC-сервера."""
     command = (
-        "import src.rpc_server as server; "
-        f"server.PORT = {port}; server.main()"
+        "import src.rpc_server as server\n"
+        f"server.PORT = {port}\n"
+        "server.main()"
     )
 
     return subprocess.Popen(

@@ -13,6 +13,7 @@ from src.rpc_client import RPCClient
 
 HOST = "127.0.0.1"
 START_TIMEOUT = 5
+EXPECTED_SESSION_COUNT = 3
 
 
 def get_free_port():
@@ -44,8 +45,9 @@ def rpc_client():
     """Запускает сервер и предоставляет RPC-клиент."""
     port = get_free_port()
     command = (
-        "import src.rpc_server as server; "
-        f"server.PORT = {port}; server.main()"
+        "import src.rpc_server as server\n"
+        f"server.PORT = {port}\n"
+        "server.main()"
     )
 
     process = subprocess.Popen(
@@ -175,7 +177,7 @@ def test_multiple_records(rpc_client):
 
     records = get_items(rpc_client.get_sessions())
 
-    assert len(records) == 3
+    assert len(records) == EXPECTED_SESSION_COUNT
     assert [item.findtext("uid") for item in records] == [
         "1", "2", "3"
     ]
